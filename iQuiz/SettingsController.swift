@@ -28,7 +28,6 @@ class SettingsController : UIViewController {
     @IBAction func checkNowTapped(_ sender: Any) {
         let url = URL(string: urlInput.text!)
         if url == nil {
-         print("URL is Empty.")
             errorMessage.text = "Invalid URL. Please try again."
             self.dismiss(animated: true, completion: self.delegate?.alertInvalid)
          return
@@ -37,12 +36,10 @@ class SettingsController : UIViewController {
             data, response, error in
                 if error == nil {
                     if data == nil {
-                        print("no data")
                         self.errorMessage.text = "No data found at this URL."
                         self.dismiss(animated: true, completion: nil)
                     } else {
                         do {
-                            print("getting data...")
                             let quizzes = try JSONDecoder().decode([Quiz].self, from: data!)
                             DispatchQueue.main.async {
                                 Quizzes.quizzes = quizzes;

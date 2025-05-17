@@ -70,7 +70,6 @@ class ViewController: UIViewController, PopoverDelegate {
     func checkNowPress() {
         quizTopics = Quizzes.quizzes
         tableView.reloadData()
-        print("reloaded from delegate function")
     }
     
     func alertInvalid() {
