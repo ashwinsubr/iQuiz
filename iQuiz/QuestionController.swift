@@ -9,7 +9,7 @@ import UIKit
 
 class QuestionController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    var quizTopic: QuizItem?
+    var topic: Quiz?
     var currentQuestionIndex: Int = 0
     var selectedOption: String = ""
     var correctAnswersCount: Int = 0
@@ -32,7 +32,7 @@ class QuestionController: UIViewController, UITableViewDataSource, UITableViewDe
         optionsTableView.delegate = self
         optionsTableView.dataSource = self
         
-        questionTextLabel.text = quizTopic?.questions[currentQuestionIndex].questionText
+        questionTextLabel.text = topic?.questions[currentQuestionIndex].text
         submitButton.isEnabled = false
     }
     
@@ -48,12 +48,12 @@ class QuestionController: UIViewController, UITableViewDataSource, UITableViewDe
     
     override func viewWillAppear(_ animated: Bool) {
         optionsTableView.reloadData()
-        questionTextLabel.text = quizTopic?.questions[currentQuestionIndex].questionText
+        questionTextLabel.text = topic?.questions[currentQuestionIndex].text
         submitButton.isEnabled = false
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return quizTopic?.questions[currentQuestionIndex].options.count ?? 0
+        return topic?.questions[currentQuestionIndex].answers.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -65,7 +65,7 @@ class QuestionController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "answerCell", for: indexPath)
-        cell.textLabel?.text = quizTopic?.questions[currentQuestionIndex].options[indexPath.row]
+        cell.textLabel?.text = topic?.questions[currentQuestionIndex].answers[indexPath.row]
         return cell
     }
     
@@ -86,21 +86,21 @@ class QuestionController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     @IBAction func submitAnswer(_ sender: Any?) {
-        let correctAnswerIndex = quizTopic?.questions[currentQuestionIndex].correctAnswerIndex ?? 0
-        let correctAnswer = quizTopic?.questions[currentQuestionIndex].options[correctAnswerIndex] ?? ""
+        let answerIndex = Int(topic?.questions[currentQuestionIndex].answer ?? "1")! - 1
+        let correctAnswer = topic?.questions[currentQuestionIndex].answers[answerIndex] ?? ""
         
         if selectedOption == correctAnswer {
             correctAnswersCount += 1
         }
         
-        let isLastQuestion = currentQuestionIndex + 1 >= quizTopic?.questions.count ?? 0
-        let totalQuestions = quizTopic?.questions.count ?? 0
+        let isLastQuestion = currentQuestionIndex + 1 >= topic?.questions.count ?? 0
+        let totalQuestions = topic?.questions.count ?? 0
         
         performSegue(withIdentifier: "showAnswer", sender: (
             isCorrect: selectedOption == correctAnswer,
             correctAnswer: correctAnswer,
             selectedOption: selectedOption,
-            questionText: quizTopic?.questions[currentQuestionIndex].questionText ?? "",
+            questionText: topic?.questions[currentQuestionIndex].text ?? "",
             isLastQuestion: isLastQuestion,
             totalQuestions: totalQuestions,
             correctAnswersCount: correctAnswersCount

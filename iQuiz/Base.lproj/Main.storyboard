@@ -39,6 +39,9 @@
                                         <buttonConfiguration key="configuration" style="filled" title="Settings"/>
                                         <connections>
                                             <action selector="settingsClick:" destination="bvg-Gu-QL2" eventType="touchUpInside" id="E8a-3A-kQd"/>
+                                            <segue destination="xuu-Nl-CUE" kind="popoverPresentation" identifier="showSettings" popoverAnchorView="bHS-KZ-lDF" id="3Bf-7l-Yiu">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -85,6 +88,70 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BGn-dB-b0K" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="130.53435114503816" y="-94.366197183098592"/>
+        </scene>
+        <!--Settings Controller-->
+        <scene sceneID="uHt-ip-rah">
+            <objects>
+                <viewController id="xuu-Nl-CUE" customClass="SettingsController" customModule="iQuiz" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="f4z-21-6ev">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="783"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NNW-ll-Tvi">
+                                <rect key="frame" x="152" y="69" width="89" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="25"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Where would you like to import quizzes from?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b9h-sr-h0l">
+                                <rect key="frame" x="23.666666666666657" y="129" width="346" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="https://tednewardsandbox.site44.com/questions.json" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ABe-iw-mFB">
+                                <rect key="frame" x="11" y="200" width="371" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Wr-j1-IId">
+                                <rect key="frame" x="140.66666666666666" y="274" width="112" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="Check Now"/>
+                                <connections>
+                                    <action selector="checkNowTapped:" destination="xuu-Nl-CUE" eventType="touchUpInside" id="DUn-1W-f8N"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fwO-PB-vH9">
+                                <rect key="frame" x="177.66666666666666" y="379" width="38" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="iCp-2u-z0I"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="fwO-PB-vH9" firstAttribute="centerX" secondItem="f4z-21-6ev" secondAttribute="centerX" id="4F7-Y6-iMr"/>
+                            <constraint firstItem="NNW-ll-Tvi" firstAttribute="centerX" secondItem="f4z-21-6ev" secondAttribute="centerX" id="6j5-j9-1ne"/>
+                            <constraint firstItem="NNW-ll-Tvi" firstAttribute="top" secondItem="iCp-2u-z0I" secondAttribute="top" constant="10" id="Dmm-kf-P3r"/>
+                            <constraint firstItem="b9h-sr-h0l" firstAttribute="centerX" secondItem="f4z-21-6ev" secondAttribute="centerX" id="EyM-3x-Lth"/>
+                            <constraint firstItem="fwO-PB-vH9" firstAttribute="top" secondItem="1Wr-j1-IId" secondAttribute="bottom" constant="70" id="RdM-7v-zqQ"/>
+                            <constraint firstItem="ABe-iw-mFB" firstAttribute="top" secondItem="b9h-sr-h0l" secondAttribute="bottom" constant="50" id="Uxr-Sq-y8r"/>
+                            <constraint firstItem="ABe-iw-mFB" firstAttribute="centerX" secondItem="f4z-21-6ev" secondAttribute="centerX" id="dEB-oF-5Iz"/>
+                            <constraint firstItem="1Wr-j1-IId" firstAttribute="centerX" secondItem="f4z-21-6ev" secondAttribute="centerX" id="dZE-bC-efu"/>
+                            <constraint firstItem="b9h-sr-h0l" firstAttribute="top" secondItem="NNW-ll-Tvi" secondAttribute="bottom" constant="30" id="fqb-Zc-6FA"/>
+                            <constraint firstItem="1Wr-j1-IId" firstAttribute="top" secondItem="ABe-iw-mFB" secondAttribute="bottom" constant="40" id="wEV-Jn-P8J"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="errorMessage" destination="fwO-PB-vH9" id="i9H-ag-OTD"/>
+                        <outlet property="urlInput" destination="ABe-iw-mFB" id="M5A-eq-VPu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZAE-If-VuL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="130.53435114503816" y="624.64788732394368"/>
         </scene>
         <!--Question Controller-->
         <scene sceneID="gYa-Hh-dG7">
