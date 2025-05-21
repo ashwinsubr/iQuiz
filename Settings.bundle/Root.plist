@@ -14,7 +14,7 @@
 			<key>Key</key>
 			<string>quizURL</string>
 			<key>DefaultValue</key>
-			<string>http://tednewardsandbox.site44.com/questions.json</string>
+			<string>https://tednewardsandbox.site44.com/questions.json</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
