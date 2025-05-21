@@ -22,9 +22,9 @@ struct Question: Codable {
 
 class Quizzes {
     static var quizzes : [Quiz] = [
-        Quiz(title: "Mathematics", desc: "Math questions, ready to do calculus?", img: "math", questions: [Question(text: "What is 2+2?", answer: "1", answers: ["4", "22", "An irrational number", "Nobody knows"]), Question(text: "What is 4+4?", answer: "2", answers: ["42", "8", "kanji tatsumi", "ryuji sakamoto"])]),
-        Quiz(title: "Marvel Super Heroes", desc: "Your favorite superheroes!", img: "venom", questions: [Question(text: "Who is Iron Man?", answer: "1", answers: ["Tony Stark", "Obadiah Stane", "A rock hit by Megadeth", "Nobody knows"])]),
-        Quiz(title: "Science", desc: "Science questions, volcano goes boom!", img: "science", questions: [Question(text: "What is fire?", answer: "1", answers: ["One of the four classical elements", "A Magical reaction given to us by God", "A band that hasn't yet been discovered", "Fire! Fire! Fire! heh-heh"])])
+        Quiz(title: "Mathematics", desc: "Math questions, ready to do calculus?", img: "math-icon", questions: [Question(text: "What is 2+2?", answer: "1", answers: ["4", "22", "An irrational number", "Nobody knows"]), Question(text: "What is 4+4?", answer: "2", answers: ["42", "8", "kanji tatsumi", "ryuji sakamoto"])]),
+        Quiz(title: "Marvel Super Heroes", desc: "Your favorite superheroes!", img: "hero-icon", questions: [Question(text: "Who is Iron Man?", answer: "1", answers: ["Tony Stark", "Obadiah Stane", "A rock hit by Megadeth", "Nobody knows"])]),
+        Quiz(title: "Science", desc: "Science questions, volcano goes boom!", img: "science-icon", questions: [Question(text: "What is fire?", answer: "1", answers: ["One of the four classical elements", "A Magical reaction given to us by God", "A band that hasn't yet been discovered", "Fire! Fire! Fire! heh-heh"])])
     ];
 }
 
@@ -35,36 +35,109 @@ class ViewController: UIViewController, PopoverDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         
-        let quizURL = "https://tednewardsandbox.site44.com/questions.json"
-        let url = URL(string: quizURL)
+        var url: URL?
+        if let settingsURL: String = UserDefaults.standard.string(forKey: "quizURL") {
+            if !settingsURL.isEmpty {
+                url = URL(string: settingsURL)
+                print("URL taken from settings: \(settingsURL)")
+            } else {
+                url = URL(string: "https://tednewardsandbox.site44.com/questions.json")
+            }
+        } else {
+            url = URL(string: "https://tednewardsandbox.site44.com/questions.json")
+        }
         
-        (URLSession.shared.dataTask(with: url!) {
-            data, response, error in
-                if error == nil {
-                    if data == nil {
-                        print("No data")
-                    } else {
-                        do {
-                            let quizzes = try JSONDecoder().decode([Quiz].self, from: data!)
-                            DispatchQueue.main.async {
-                                Quizzes.quizzes = quizzes
-                                self.checkNowPress()
-                            }
-                        } catch {
-                            print("Error parsing JSON: \(error)")
-                        }
-                    }
-                } else {
+        guard let requestURL = url else {
+            print("Invalid URL")
+            loadOfflineContent()
+            return
+        }
+        
+        URLSession.shared.dataTask(with: requestURL) { data, response, error in
+            if error == nil, let data = data {
+                do {
+                    let fileURL = self.getDocumentsDirectory().appendingPathComponent("quizzes.json")
+                    try data.write(to: fileURL)
+                    
+                    let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
                     DispatchQueue.main.async {
-                        print("Network error")
+                        Quizzes.quizzes = quizzes
+                        self.quizTopics = quizzes
+                        self.tableView.reloadData()
                     }
+                } catch {
+                    print("Error parsing JSON: \(error)")
+                    self.loadOfflineContent()
                 }
-        }).resume()
+            } else {
+                print("Network error or offline")
+                self.loadOfflineContent()
+            }
+        }.resume()
         
         tableView.delegate = self
         tableView.dataSource = self
+    }
+    
+    func loadOfflineContent() {
+        DispatchQueue.main.async {
+            let fileURL = self.getDocumentsDirectory().appendingPathComponent("quizzes.json")
+            if FileManager.default.fileExists(atPath: fileURL.path) {
+                do {
+                    let data = try Data(contentsOf: fileURL)
+                    let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
+                    Quizzes.quizzes = quizzes
+                    self.quizTopics = quizzes
+                    self.tableView.reloadData()
+                    
+                    let alert = UIAlertController(title: "Offline Mode",
+                                                 message: "You are currently offline. Using locally stored quizzes.",
+                                                 preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self.present(alert, animated: true)
+                } catch {
+                    print("Error loading from local storage: \(error)")
+                }
+            } else {
+                // No local storage found, use default quizzes
+                self.quizTopics = Quizzes.quizzes
+                self.tableView.reloadData()
+                
+                let alert = UIAlertController(title: "No Connection",
+                                             message: "No network connection and no locally stored quizzes found. Using default quizzes.",
+                                             preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(alert, animated: true)
+            }
+        }
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+    
+    func saveQuizzesToLocalStorage() {
+        do {
+            let fileURL = getDocumentsDirectory().appendingPathComponent("quizzes.json")
+            let data = try JSONEncoder().encode(Quizzes.quizzes)
+            try data.write(to: fileURL)
+            print("Quizzes saved to local storage")
+        } catch {
+            print("Error saving quizzes: \(error)")
+        }
+    }
+    
+    func loadQuizzesFromLocalStorage() -> [Quiz]? {
+        do {
+            let fileURL = getDocumentsDirectory().appendingPathComponent("quizzes.json")
+            let data = try Data(contentsOf: fileURL)
+            let quizzes = try JSONDecoder().decode([Quiz].self, from: data)
+            return quizzes
+        } catch {
+            print("Error loading quizzes: \(error)")
+            return nil
+        }
     }
     
     func checkNowPress() {
@@ -81,7 +154,9 @@ class ViewController: UIViewController, PopoverDelegate {
     @IBAction func unwindToTopicList(segue: UIStoryboardSegue) {}
     
     @IBAction func settingsClick(_ sender: UIButton) {
-        performSegue(withIdentifier: "showSettings", sender: nil)
+        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsUrl)
+        }
     }
 }
 
@@ -129,7 +204,6 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         cell.detailTextLabel?.text = quizTopics[indexPath.row].desc
         cell.detailTextLabel?.font = UIFont.systemFont(ofSize: 14, weight: .light)
         
-        // Simplified image handling
         if quizTopics[indexPath.row].img == nil {
             if quizTopics[indexPath.row].title == "Science!" || quizTopics[indexPath.row].title == "Marvel Super Heroes" || quizTopics[indexPath.row].title == "Mathematics" {
                 cell.imageView?.image = UIImage(named: quizTopics[indexPath.row].title)
